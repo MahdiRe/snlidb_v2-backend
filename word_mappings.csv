@@ -1,0 +1,35 @@
+Sinhala_word,Root_word,English_word,Semantic_meaning
+සිසුවා,සිසුවා,Student,Table
+ශිෂ්යයා,ශිෂ්යයා,Student,Table
+ළමයා,ළමයා,Student,Table
+ලමයා,ලමයා,Student,Table
+නම,නම,name,column
+ලිපිනය,ලිපින,address,column
+වයස,වයස,age,column
+ලකුණු,ලකුණු,marks,column
+ලකුනු,ලකුනු,marks,column
+ලබාදෙන්න,ලබාදෙන්න,select,command
+දෙන්න,ලබාදෙන්න,select,command
+කුමක්ද,කුමක්,select,command
+කීයද,කීයද,select,command
+කොපමණද,කොපමණ,select,command
+පමණක්,පමණක,where,condition
+සහ,සහ,And,Logical_operator 
+හා,හා,And,Logical_operator 
+හෝ,හෝ,Or,Logical_operator 
+ක්,ක්,=,Condition _ operator
+සමාන,සමාන,=,Condition _ operator
+ටවැඩි,ටවැඩි,>,Condition _ operator
+ටවැඩි,ටවැඩි,>,Condition _ operator
+වැඩි,වැඩි,>,Condition _ operator
+වඩා,වඩා,>,Condition _ operator
+ටඅඩු,ටඅඩු,<,Condition _ operator
+හෝවැඩි,හෝවැඩි,>=,Condition_operator
+සහවැඩි,සහවැඩි,>=,Condition_operator
+හෝඅඩු,හෝඅඩු,<=,Condition_operator
+සහඅඩු,සහඅඩු,<=,Condition_operator
+ලබාගත්,ලබාගත්,-,unnecessary_word
+නිසා,නිසා,-,unnecessary_word
+ඇත,ඇත,-,unnecessary_word
+බවට,බවට,-,unnecessary_word
+සිසුන්,සිසුන්,Student,Table

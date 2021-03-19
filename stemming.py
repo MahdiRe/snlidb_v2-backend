@@ -14,5 +14,5 @@ class Stemming:
             self.stemmer_dict[line[0].strip()] = line[1].strip('\n')
 
     def findRoot(self, word):
-        stem = self.stemmer_dict.get(word)
+        stem = self.stemmer_dict.get(word, word)
         return stem
