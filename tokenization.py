@@ -13,13 +13,13 @@ class Tokenization:
 
         # tokenization
         tokens = [self.tokenizer.tokenize(f'{ss}.') for ss in self.tokenizer.split_sentences(sentence)]
-        print(tokens)
+        # print(tokens)
 
         # Stemming
         stems = []
         for token in tokens[0]:
             stems.append(self.stemming.findRoot(token))
-        print('stems: ' + str(stems))
+        # print('stems: ' + str(stems))
 
         # POS Tagging
         pos_tags = self.tagger.predict([stems])
