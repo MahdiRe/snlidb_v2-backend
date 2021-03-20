@@ -32,6 +32,34 @@ class ConditionExtractor:
             min_ += 1
         return conditions_
 
+
+    def extractCondition1(self, tags):
+        # Extract Conditions
+        min_, max_, condition_, conditions_ = 0, (len(tags) - 2), '', []
+        while min_ < max_:
+            if (tags[min_][1] == 'VP' or tags[min_][1] == 'NNC') and \
+                    (tags[(min_ + 1)][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM') and \
+                    (tags[(min_ + 2)][1] == 'JJ' or tags[(min_ + 2)][1] == 'VP'):
+                if tags[min_][2] == 'column' and tags[(min_ + 2)][2] == 'comparison':
+                    condition_ = tags[min_][0] + ' ' + tags[(min_ + 1)][0] + ' ' + tags[(min_ + 2)][0]
+                    conditions_.append([tags[min_], tags[(min_ + 1)], tags[(min_ + 2)]])
+            min_ += 1
+        return conditions_
+
+    def extractCondition2(self, tags):
+        # Extract Conditions
+        min_, max_, condition_, conditions_ = 0, (len(tags) - 2), '', []
+        while min_ < max_:
+            if tags[min_][2] == 'column' and \
+                    (tags[(min_ + 1)][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM') and \
+                    tags[(min_ + 2)][2] == 'comparison':
+                    condition_ = tags[min_][0] + ' ' + tags[(min_ + 1)][0] + ' ' + tags[(min_ + 2)][0]
+                    print(condition_)
+                    conditions_.append([tags[min_], tags[(min_ + 1)], tags[(min_ + 2)]])
+            min_ += 1
+        return conditions_
+
+
     def ho_wedi_issue(self, list_):
         min_ = 0
         while min_ < len(list_):
@@ -48,3 +76,18 @@ class ConditionExtractor:
             x = str(num) + 'ක්'
             sentence = sentence.replace(str(num), x)
         return sentence
+
+    def num_issue(self, list_):
+        min_ = 0
+        while min_ < len(list_):
+            if any(char.isdigit() for char in list_[min_]):
+                list_[min_] = list_[min_].replace('ක්', '')
+                list_[min_] = list_[min_].replace('ක', '')
+                list_[min_] = list_[min_].replace('ත්', '')
+                list_[min_] = list_[min_].replace('වූ', '')
+                list_[min_] = list_[min_].replace('වු', '')
+            min_ += 1
+        return list_
+
+
+

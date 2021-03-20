@@ -27,47 +27,26 @@ t4 = "ලකුනු 75ට වැඩි සිසුන්ගේ විස්�
 t5 = "ලකුනු 75ක් ගත් සිසුන්ගේ විස්තර ලබාදෙන්න"
 t6 = "වයස 14 වු  සිසුන්ගේ විස්තර ලබාදෙන්න"
 t7 = "ලකුනු 75ක් හෝඅඩු සිසුන්ගේ විස්තර ලබාදෙන්න"
+t77 = "ලකුනු 75 හෝඅඩු සිසුන්ගේ විස්තර ලබාදෙන්න"
 t8 = "ලකුනු 75 හෝ ඊට වැඩි සිසුන්ගේ විස්තර ලබාදෙන්න"
+t9 = "ලකුනු 75ක් හෝවැඩි සිසුන්ගේ විස්තර ලබාදෙන්න"
+t10 = "ලකුනු 75 හෝවැඩි සිසුන්ගේ විස්තර ලබාදෙන්න"
 
 
 @app.route('/')
 def hello_world():
 
-    # nlq = t1
-    # nlq = nlq.replace('හෝ වැඩි', 'හෝවැඩි')
-    # nlq = nlq.replace('හෝ ඊට වැඩි', 'හෝවැඩි')
-    # nlq = nlq.replace('හෝ අඩු', 'හෝඅඩු')
-    # nlq = nlq.replace('හෝ ඊට අඩු', 'හෝඅඩු')
-
     nlq = condition_ex.replaceConditions(t8)
-    nlq = condition_ex.num_k_issue(nlq)
+    # nlq = condition_ex.num_k_issue(nlq)
     print('nlq: ' + nlq)
-
 
     # Tokenization + Stemming + POS Tagging
     tags = (tokenizer.posTagger(nlq))[0]
-    tags = condition_ex.ho_wedi_issue(tags)
+    # tags = condition_ex.ho_wedi_issue(tags)
     print('tokens: ' + str(tags))
 
-    conditions_ = condition_ex.extractConditions(tags)
-    print('conditions: ' + str(conditions_))
-    # # Extract Conditions
-    # min_, max_, condition_, conditions_ = 0, (len(tags)-2), '', []
-    # while min_ < max_:
-    #     if (tags[min_][1] == 'VP' or tags[min_][1] == 'NNC') and tags[(min_+1)][1] == 'NNC' and tags[(min_+2)][1] == 'JJ':
-    #         condition_ = tags[min_][0] + ' ' + tags[(min_+1)][0] + ' ' + tags[(min_+2)][0]
-    #         conditions_.append(condition_)
-    #     elif (tags[min_][1] == 'VP' or tags[min_][1] == 'NNC') and tags[(min_+1)][1] == 'NNC' and tags[(min_+2)][1] == 'VP':
-    #         condition_ = tags[min_][0] + ' ' + tags[(min_+1)][0] + ' ' + tags[(min_+2)][0]
-    #         conditions_.append(condition_)
-    #     elif (tags[min_][1] == 'VP' or tags[min_][1] == 'NNC') and tags[(min_+1)][1] == 'NUM' and tags[(min_+2)][1] == 'JJ':
-    #         condition_ = tags[min_][0] + ' ' + tags[(min_+1)][0] + ' ' + tags[(min_+2)][0]
-    #         conditions_.append(condition_)
-    #     elif (tags[min_][1] == 'VP' or tags[min_][1] == 'NNC') and tags[(min_ + 1)][1] == 'NUM' and tags[(min_ + 2)][1] == 'VP':
-    #         condition_ = tags[min_][0] + ' ' + tags[(min_ + 1)][0] + ' ' + tags[(min_ + 2)][0]
-    #         conditions_.append(condition_)
-    #
-    #     min_ += 1
+    # conditions_ = condition_ex.extractConditions(tags)
+    # print('conditions: ' + str(conditions_))
 
     # chunker = RegexpParser("""
     #                             COND: {<VP> <NNC> <JJ>}
@@ -86,23 +65,38 @@ def hello_world():
     # Derive the Command, Table, Columns, Logics and Conditions
 
     # Derive the operation
-    # command, table, columns, logics, conditions = '', '', [], [], []
-    # for tag in tags:
-    #     query = "SELECT english_word,semantic_meaning FROM word_mappings WHERE sinhala_word='"+tag[0] + \
-    #             "' OR root_word='" + tag[0] + "';"
-    #     result = db.executeQuery(query)
-    #     for i in result:
-    #         if i[1] != 'neglect':
-    #             if i[1] == 'command':
-    #                 command = i[0]
-    #             elif i[1] == 'table':
-    #                 table = i[0]
-    #             elif i[1] == 'column':
-    #                 columns.append((tag[0], i[0]))
-    #             elif i[1] == 'logic':
-    #                 logics.append((tag[0], i[0]))
-    #             elif i[1] == 'condition':
-    #                 conditions.append((tag[0], i[0]))
+    command, table, columns, logics, conditions, min_ = '', '', [], [], [], 0
+    # print(str(tags))
+
+    while min_ < len(tags):
+        query = "SELECT english_word,semantic_meaning FROM word_mappings" \
+                " WHERE sinhala_word='"+tags[min_][0] + "' OR root_word='" + tags[min_][0] + "';"
+        result = db.executeQuery(query)
+        if result:
+            # print(result)
+            for res in result:
+                if res[1] == 'neglect':
+                    tags[min_] = listToTuple(tags[min_], res)
+                elif res[1] == 'command':
+                    command = res[0]
+                    tags[min_] = listToTuple(tags[min_], res)
+                elif res[1] == 'table':
+                    table = res[0]
+                    tags[min_] = listToTuple(tags[min_], res)
+                elif res[1] == 'column':
+                    columns.append((tags[min_][0], res[0]))
+                    tags[min_] = listToTuple(tags[min_], res)
+                elif res[1] == 'logic':
+                    logics.append((tags[min_][0], res[0]))
+                    tags[min_] = listToTuple(tags[min_], res)
+                elif res[1] == 'comparison':
+                    conditions.append((tags[min_][0], res[0]))
+                    tags[min_] = listToTuple(tags[min_], res)
+        else:
+            tags[min_] = listToTuple(tags[min_], ('TBC', 'TBC'))
+        min_ += 1
+
+    con_ex = condition_ex.extractCondition2(tags)
 
     # Replace the logics
     # print('columns' + str(columns))
@@ -118,7 +112,7 @@ def hello_world():
     #
     # # ab = command + ' ' + str(columns) + ' FROM ' + table
     # return str(conditional_tags)
-    return str(conditions_)
+    return str(con_ex)
 
 
 # @app.route('/query', methods=['POST'])
@@ -133,9 +127,22 @@ def hello_world():
 #     # x = db.executeQuery("insert into patient(name,age) values ('gg',17)")
 #     return 'test'
 
+def listToTuple(tuple_, result_):
+    j = list(tuple_)
+    j.append(result_[1])
+    j.append(result_[0])
+    return tuple(j)
+
 @app.route('/a')
 def a():
-    return str(tokenizer.posTagger(t7))
+    print(str(tokenizer.posTagger(t4)))
+    print(str(tokenizer.posTagger(t5)))
+    print(str(tokenizer.posTagger(t6)))
+    print(str(tokenizer.posTagger(t7)))
+    print(str(tokenizer.posTagger(t77)))
+    print(str(tokenizer.posTagger(t9)))
+    print(str(tokenizer.posTagger(t10)))
+    return str(tokenizer.posTagger(t9))
 
 @app.route('/b')
 def b():
