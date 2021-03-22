@@ -1,5 +1,6 @@
 import re
 
+
 class ConditionExtractor:
     
     def replaceConditions(self, sentence):
@@ -53,8 +54,8 @@ class ConditionExtractor:
             if tags[min_][2] == 'column' and \
                     (tags[(min_ + 1)][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM') and \
                     tags[(min_ + 2)][2] == 'comparison':
-                    condition_ = tags[min_][0] + ' ' + tags[(min_ + 1)][0] + ' ' + tags[(min_ + 2)][0]
-                    print(condition_)
+                    # condition_ = tags[min_][0] + ' ' + tags[(min_ + 1)][0] + ' ' + tags[(min_ + 2)][0]
+                    # print(condition_)
                     conditions_.append([tags[min_], tags[(min_ + 1)], tags[(min_ + 2)]])
             min_ += 1
         return conditions_

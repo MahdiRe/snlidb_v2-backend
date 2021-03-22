@@ -35,7 +35,6 @@ t10 = "ලකුනු 75 හෝවැඩි සිසුන්ගේ විස�
 
 @app.route('/')
 def hello_world():
-
     nlq = condition_ex.replaceConditions(t8)
     # nlq = condition_ex.num_k_issue(nlq)
     print('nlq: ' + nlq)
@@ -48,29 +47,12 @@ def hello_world():
     # conditions_ = condition_ex.extractConditions(tags)
     # print('conditions: ' + str(conditions_))
 
-    # chunker = RegexpParser("""
-    #                             COND: {<VP> <NNC> <JJ>}
-    #                             COND: {<VP> <NNC> <VP>}
-    #                             COND: {<NNC> <NUM> <VP>}
-    #                             COND: {<VP> <NNC> <JJ>}
-    #                         """)
-
-    # # Print all parts of speech in above sentence
-    # output = chunker.parse(tags[0])
-    # print("After Extracting\n", output)
-    #
-    # # To draw the parse tree
-    # output.draw()
-
     # Derive the Command, Table, Columns, Logics and Conditions
-
-    # Derive the operation
-    command, table, columns, logics, conditions, min_ = '', '', [], [], [], 0
-    # print(str(tags))
+    command, table, columns, logics, comparisons, min_ = '', '', [], [], [], 0
 
     while min_ < len(tags):
         query = "SELECT english_word,semantic_meaning FROM word_mappings" \
-                " WHERE sinhala_word='"+tags[min_][0] + "' OR root_word='" + tags[min_][0] + "';"
+                " WHERE sinhala_word='" + tags[min_][0] + "' OR root_word='" + tags[min_][0] + "';"
         result = db.executeQuery(query)
         if result:
             # print(result)
@@ -84,35 +66,67 @@ def hello_world():
                     table = res[0]
                     tags[min_] = listToTuple(tags[min_], res)
                 elif res[1] == 'column':
-                    columns.append((tags[min_][0], res[0]))
+                    # columns.append((tags[min_][0], res[0]))
+                    columns.append(res[0])
                     tags[min_] = listToTuple(tags[min_], res)
                 elif res[1] == 'logic':
-                    logics.append((tags[min_][0], res[0]))
+                    # logics.append((tags[min_][0], res[0]))
+                    logics.append(res[0])
                     tags[min_] = listToTuple(tags[min_], res)
                 elif res[1] == 'comparison':
-                    conditions.append((tags[min_][0], res[0]))
+                    # conditions.append((tags[min_][0], res[0]))
+                    comparisons.append(res[0])
                     tags[min_] = listToTuple(tags[min_], res)
         else:
             tags[min_] = listToTuple(tags[min_], ('TBC', 'TBC'))
         min_ += 1
 
-    con_ex = condition_ex.extractCondition2(tags)
+    conditions = condition_ex.extractCondition2(tags)
 
-    # Replace the logics
-    # print('columns' + str(columns))
-    # print('logics' + str(logics))
-    # print('conditions' + str(conditions))
+    # What I have now?
+    x = 'tags : ' + str(tags) + '\n' \
+                                'tables : ' + str(table) + '\n' \
+                                                           'columns : ' + str(columns) + '\n' \
+                                                                                         'conditions : ' + str(
+        conditions) + '\n' \
+                      'logics : ' + str(logics)
+    print(x)
 
-    # conditional_word = ''
-    # for con in conditions:
-    #     print(con)
-    #     conditional_word = t7.replace(con[0], con[1])
-    #
-    # conditional_tags = tokenizer.posTagger(conditional_word)
-    #
-    # # ab = command + ' ' + str(columns) + ' FROM ' + table
-    # return str(conditional_tags)
-    return str(con_ex)
+    sql_, columns_, conditions_ = '', '', ''
+
+    if table:
+        # table found
+        if command:
+            # command found
+            if command == 'SELECT':  # IF it is SELECT query
+                if columns:
+                    for col in columns:  # Have specified columns?
+                        columns_ += col + ','
+                    columns_ = columns_[:-1]  # Remove ','
+                else:  # No specified columns, then take all
+                    columns_ = '*'
+
+                if conditions:  # Have condition?
+                    conditions_ += 'WHERE '
+                    min_ = 0
+                    while min_ < len(conditions):
+                        print(conditions[min_])
+                        conditions_ += conditions[min_][0][3] + conditions[min_][2][3] + conditions[min_][1][0]
+                        if logics and min_ < len(logics): #  Have logics?
+                            conditions_ += " " + logics[min_] + " "
+                        min_ += 1
+        else:
+            print('Error: No command found!')
+    else:
+        print('Error: No table found!')
+
+    # What I have now?
+    x = 'command: ' + command + '\tcolumns: ' + columns_ + '\ttable: ' + table + '\tconditions: ' + conditions_
+
+    # Generate SQL query
+    sql_ = command + " " + columns_ + " FROM " + table + " " + conditions_ + ";"
+
+    return sql_
 
 
 # @app.route('/query', methods=['POST'])
@@ -133,6 +147,7 @@ def listToTuple(tuple_, result_):
     j.append(result_[0])
     return tuple(j)
 
+
 @app.route('/a')
 def a():
     print(str(tokenizer.posTagger(t4)))
@@ -144,8 +159,9 @@ def a():
     print(str(tokenizer.posTagger(t10)))
     return str(tokenizer.posTagger(t9))
 
-@app.route('/b')
-def b():
+
+@app.route('/parsetree')
+def parsetree():
     # Example text
     sample_text = "The quick brown fox jumps over the lazy dog"
 
