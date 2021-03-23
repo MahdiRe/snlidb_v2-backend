@@ -1,5 +1,6 @@
 from flaskext.mysql import MySQL
 
+
 class Db:
 
     def __init__(self, app):

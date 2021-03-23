@@ -7,7 +7,7 @@ class Service:
 
     def __init__(self, app):
         self.db = Db(app)
-        self.condition_ex = ConditionExtractor()
+        self.condition_ex = ConditionExtractor(self.db)
         self.tokenizer = Tokenization()
 
     def generateSQL(self, query):
@@ -55,6 +55,13 @@ class Service:
 
         conditions = self.condition_ex.extractCondition2(tags)
 
+        # Remove columns that involve in conditions.
+        for con in conditions:
+            for con1 in con:
+                if con1[2] == 'column':
+                    if columns.count(con1[3]):
+                        columns.remove(con1[3])
+
         # What I have now?
         x = 'tags : ' + str(tags) + '\n' \
             'tables : ' + str(table) + '\n' \
@@ -63,13 +70,10 @@ class Service:
             'logics : ' + str(logics)
         print(x)
 
-        # Remove columns that involve in conditions.
-        for con in conditions:
-            for con1 in con:
-                if con1[2] == 'column':
-                    columns.remove(con1[3])
-
         sql_, columns_, conditions_ = '', '', ''
+
+        if not table:
+            table = 'student'
 
         if table:
             # table found
@@ -88,7 +92,7 @@ class Service:
                         min_ = 0
                         while min_ < len(conditions):
                             print(conditions[min_])
-                            conditions_ += conditions[min_][0][3] + conditions[min_][2][3] + conditions[min_][1][0]
+                            conditions_ += conditions[min_][0][3] + conditions[min_][1][3] + conditions[min_][2][3]
                             if logics and min_ < len(logics):  # Have logics?
                                 conditions_ += " " + logics[min_] + " "
                             min_ += 1
@@ -99,9 +103,14 @@ class Service:
 
         # What I have now?
         x = 'command: ' + command + '\tcolumns: ' + columns_ + '\ttable: ' + table + '\tconditions: ' + conditions_
+        print(x)
 
         # Generate SQL query
-        sql_ = command + " " + columns_ + " FROM " + table + " " + conditions_ + ";"
+        sql_ = command + " " + columns_ + " FROM " + table
+        if conditions_:
+            sql_ += " " + conditions_ + ";"
+        else:
+            sql_ += ';'
 
         return sql_
 

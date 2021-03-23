@@ -1,35 +1,48 @@
-import re
+from db import Db
 
 
 class ConditionExtractor:
 
+    def __init__(self, db):
+        self.db = db
+
     def extractCondition2(self, tags):
         # Extract Conditions
-        min_, max_, condition_, conditions_ = 0, (len(tags) - 2), '', []
+        min_, max_, conditions_ = 0, (len(tags) - 2), []
         while min_ < max_:
             # Example: ලකුනු 75ට වැඩි, නම සුනිල්ට සමාන
             if tags[min_][2] == 'column' and \
                     (tags[(min_ + 1)][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM' or tags[(min_ + 1)][1] == 'NNP') and \
                     tags[(min_ + 2)][2] == 'comparison':
-
-                # condition_ = tags[min_][0] + ' ' + tags[(min_ + 1)][0] + ' ' + tags[(min_ + 2)][0]
-                # print(condition_)
-
                 tags[(min_ + 1)] = self.changeSpecificTupleValue(tags[(min_ + 1)], 3,
-                                                                 self.replaceLastCharacter(tags[(min_ + 1)][3]))
-                conditions_.append([tags[min_], tags[(min_ + 1)], tags[(min_ + 2)]])
+                                                                 self.replaceLastCharacter(tags[(min_ + 1)][0]))
+                conditions_.append([tags[min_], tags[(min_ + 2)], tags[(min_ + 1)]])
 
             # Example: 75ට සමාන ලකුනු, සුනිල්ට සමාන නම
-            elif (tags[min_][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM' or tags[(min_ + 1)][1] == 'NNP') and \
+            elif (tags[min_][1] == 'NNC' or tags[min_][1] == 'NUM' or tags[min_][1] == 'NNP') and \
                     tags[(min_ + 1)][2] == 'comparison' and \
                     tags[(min_ + 2)][2] == 'column':
-
-                tags[min_][3] = self.replaceLastCharacter(tags[(min_ + 1)][3])
-                conditions_.append([tags[min_], tags[(min_ + 1)], tags[(min_ + 2)]])
+                tags[min_] = self.changeSpecificTupleValue(tags[min_], 3,
+                                                           self.replaceLastCharacter(tags[min_][0]))
+                conditions_.append([tags[(min_ + 2)], tags[(min_ + 1)], tags[min_]])
+                print(conditions_)
 
             min_ += 1
+
+        if len(conditions_) == 0:
+            for tag in tags:
+                if tag[1] == 'NNP':
+                    tag = self.changeSpecificTupleValue(tag, 3, self.replaceLastCharacter(tag[0]))
+                    sql_ = "SELECT * FROM student WHERE name = " + tag[3]
+                    result = self.db.executeQuery(sql_)
+                    if result:
+                        print('wait')
+                        conditions_.append([('-', '-', 'column', 'name'), ('-', '-', 'comparison', '='), tag])
+                    else:
+                        print('Error: No ' + tag[3] + 'found!')
+
         return conditions_
-    
+
     def replaceConditions(self, sentence):
         sentence = sentence.replace('අඩුවෙන්', 'අඩු')
         sentence = sentence.replace('වැඩියෙන්', 'වැඩි')
@@ -56,16 +69,15 @@ class ConditionExtractor:
         else:
             if word[-2:] == 'ගේ':
                 word = word.replace('ගේ', '')
-            elif word[-2:] == 'ට':
+            elif word[-1:] == 'ට':
                 word = word.replace('ට', '')
-        return word
+        return "'" + word + "'"
 
     def changeSpecificTupleValue(self, tuple_, index, value):
         list_ = list(tuple_)
         list_[index] = value
         tuple_ = tuple(list_)
         return tuple_
-
 
     # def extractConditions(self, tags):
     #     # Extract Conditions

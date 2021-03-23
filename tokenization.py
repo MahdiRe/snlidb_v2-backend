@@ -9,7 +9,6 @@ class Tokenization:
         self.tokenizer = SinhalaTokenizer()
         self.tagger = POSTagger()
         self.stemming = Stemming()
-        self.conx = ConditionExtractor()
 
     def posTagger(self, sentence):
 
