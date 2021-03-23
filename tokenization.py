@@ -18,7 +18,7 @@ class Tokenization:
         # print(tokens)
 
         # Remove ක්, ක, ත්, වූ, වු in numbers only
-        tokens = [self.conx.num_issue(tokens[0])]
+        # tokens = [self.conx.num_issue(tokens[0])]
         # print(tokens)
 
         # Stemming
