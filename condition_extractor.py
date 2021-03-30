@@ -25,7 +25,7 @@ class ConditionExtractor:
                 tags[min_] = self.changeSpecificTupleValue(tags[min_], 3,
                                                            self.replaceLastCharacter(tags[min_][0]))
                 conditions_.append([tags[(min_ + 2)], tags[(min_ + 1)], tags[min_]])
-                print(conditions_)
+                # print(conditions_)
 
             min_ += 1
 
@@ -36,11 +36,25 @@ class ConditionExtractor:
                     sql_ = "SELECT * FROM student WHERE name = " + tag[3]
                     result = self.db.executeQuery(sql_)
                     if result:
-                        print('wait')
+                        # print('wait')
                         conditions_.append([('-', '-', 'column', 'name'), ('-', '-', 'comparison', '='), tag])
                     else:
                         print('Error: No ' + tag[3] + 'found!')
 
+        return conditions_
+
+    def extractUpdates(self, tags):
+        # Extract Conditions
+        min_, max_, conditions_ = 0, (len(tags) - 2), []
+        while min_ < max_:
+            # Example: නම සුනිල් ලෙස, වයස 45 ලෙස, ලකුනු 50 ලෙස
+            if tags[min_][2] == 'column' and \
+                    (tags[(min_ + 1)][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM' or tags[(min_ + 1)][1] == 'NNP') and \
+                    tags[(min_ + 2)][2] != 'comparison':
+                tags[(min_ + 1)] = self.changeSpecificTupleValue(tags[(min_ + 1)], 3,
+                                                                 self.replaceLastCharacter(tags[(min_ + 1)][0]))
+                conditions_.append([tags[min_], tags[(min_ + 1)]])
+            min_ += 1
         return conditions_
 
     def replaceConditions(self, sentence):
@@ -71,7 +85,8 @@ class ConditionExtractor:
                 word = word.replace('ගේ', '')
             elif word[-1:] == 'ට':
                 word = word.replace('ට', '')
-        return "'" + word + "'"
+            word = "'" + word + "'"
+        return word
 
     def changeSpecificTupleValue(self, tuple_, index, value):
         list_ = list(tuple_)
@@ -79,68 +94,11 @@ class ConditionExtractor:
         tuple_ = tuple(list_)
         return tuple_
 
-    # def extractConditions(self, tags):
-    #     # Extract Conditions
-    #     min_, max_, condition_, conditions_ = 0, (len(tags) - 2), '', []
-    #     while min_ < max_:
-    #         if (tags[min_][1] == 'VP' or tags[min_][1] == 'NNC') and tags[(min_ + 1)][1] == 'NNC' and \
-    #                 tags[(min_ + 2)][1] == 'JJ':
-    #             condition_ = tags[min_][0] + ' ' + tags[(min_ + 1)][0] + ' ' + tags[(min_ + 2)][0]
-    #             conditions_.append(condition_)
-    #         elif (tags[min_][1] == 'VP' or tags[min_][1] == 'NNC') and tags[(min_ + 1)][1] == 'NNC' and \
-    #                 tags[(min_ + 2)][1] == 'VP':
-    #             condition_ = tags[min_][0] + ' ' + tags[(min_ + 1)][0] + ' ' + tags[(min_ + 2)][0]
-    #             conditions_.append(condition_)
-    #         elif (tags[min_][1] == 'VP' or tags[min_][1] == 'NNC') and tags[(min_ + 1)][1] == 'NUM' and \
-    #                 tags[(min_ + 2)][1] == 'JJ':
-    #             condition_ = tags[min_][0] + ' ' + tags[(min_ + 1)][0] + ' ' + tags[(min_ + 2)][0]
-    #             conditions_.append(condition_)
-    #         elif (tags[min_][1] == 'VP' or tags[min_][1] == 'NNC') and tags[(min_ + 1)][1] == 'NUM' and \
-    #                 tags[(min_ + 2)][1] == 'VP':
-    #             condition_ = tags[min_][0] + ' ' + tags[(min_ + 1)][0] + ' ' + tags[(min_ + 2)][0]
-    #             conditions_.append(condition_)
-    #         min_ += 1
-    #     return conditions_
-
-    # def extractCondition1(self, tags):
-    #     # Extract Conditions
-    #     min_, max_, condition_, conditions_ = 0, (len(tags) - 2), '', []
-    #     while min_ < max_:
-    #         if (tags[min_][1] == 'VP' or tags[min_][1] == 'NNC') and \
-    #                 (tags[(min_ + 1)][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM') and \
-    #                 (tags[(min_ + 2)][1] == 'JJ' or tags[(min_ + 2)][1] == 'VP'):
-    #             if tags[min_][2] == 'column' and tags[(min_ + 2)][2] == 'comparison':
-    #                 condition_ = tags[min_][0] + ' ' + tags[(min_ + 1)][0] + ' ' + tags[(min_ + 2)][0]
-    #                 conditions_.append([tags[min_], tags[(min_ + 1)], tags[(min_ + 2)]])
-    #         min_ += 1
-    #     return conditions_
-
-    # def ho_wedi_JJ_issue(self, list_):
-    #     min_ = 0
-    #     while min_ < len(list_):
-    #         j = list(list_[min_])
-    #         if j[0] == 'හෝවැඩි':
-    #             j[1] = 'JJ'
-    #         list_[min_] = tuple(j)
-    #         min_ += 1
-    #     return list_
-
-    # def num_k_issue(self, sentence):
-    #     nums_ = [int(s) for s in re.findall(r'\b\d+\b', sentence)]
-    #     for num in nums_:
-    #         x = str(num) + 'ක්'
-    #         sentence = sentence.replace(str(num), x)
-    #     return sentence
-
-    # def num_issue(self, list_):
-    #     min_ = 0
-    #     while min_ < len(list_):
-    #         if any(char.isdigit() for char in list_[min_]):
-    #             list_[min_] = list_[min_].replace('ක්', '')
-    #             list_[min_] = list_[min_].replace('ක', '')
-    #             list_[min_] = list_[min_].replace('ත්', '')
-    #             list_[min_] = list_[min_].replace('වූ', '')
-    #             list_[min_] = list_[min_].replace('වු', '')
-    #             list_[min_] = list_[min_].replace('ට', '')
-    #         min_ += 1
-    #     return list_
+# ----------------------
+# (VP or NNC) + NNC + JJ
+# (VP or NNC) + NNC + VP
+# (VP or NNC) + NUM + JJ
+# (VP or NNC) + NUM + VP
+# ----------------------
+# (VP or NNC) -> [1] is column & [3] is comparison
+# ----------------------

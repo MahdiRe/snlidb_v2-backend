@@ -53,7 +53,9 @@ class Service:
                 tags[min_] = self.listToTuple(tags[min_], ('TBC', 'TBC'))
             min_ += 1
 
+        # Derive the conditions
         conditions = self.condition_ex.extractCondition2(tags)
+        updates = self.condition_ex.extractUpdates(tags)
 
         # Remove columns that involve in conditions.
         for con in conditions:
@@ -67,10 +69,11 @@ class Service:
             'tables : ' + str(table) + '\n' \
             'columns : ' + str(columns) + '\n' \
             'conditions : ' + str(conditions) + '\n' \
-            'logics : ' + str(logics)
+            'logics : ' + str(logics) + '\n' \
+            'updates : ' + str(updates)
         print(x)
 
-        sql_, columns_, conditions_ = '', '', ''
+        sql_, columns_, conditions_, updates_ = '', '', '', ''
 
         if not table:
             table = 'student'
@@ -87,15 +90,22 @@ class Service:
                     else:  # No specified columns, then take all
                         columns_ = '*'
 
-                    if conditions:  # Have condition?
-                        conditions_ += 'WHERE '
-                        min_ = 0
-                        while min_ < len(conditions):
-                            print(conditions[min_])
-                            conditions_ += conditions[min_][0][3] + conditions[min_][1][3] + conditions[min_][2][3]
-                            if logics and min_ < len(logics):  # Have logics?
-                                conditions_ += " " + logics[min_] + " "
-                            min_ += 1
+                elif command == 'UPDATE':
+                    if updates:
+                        for update in updates:  # Have specified updates?
+
+                            updates_ += update[0][3] + "=" + update[1][3] + ","
+                        updates_ = updates_[:-1]  # Remove ','
+
+                if conditions:  # Have condition?
+                    conditions_ += 'WHERE '
+                    min_ = 0
+                    while min_ < len(conditions):
+                        # print(conditions[min_])
+                        conditions_ += conditions[min_][0][3] + conditions[min_][1][3] + conditions[min_][2][3]
+                        if logics and min_ < len(logics):  # Have logics?
+                            conditions_ += " " + logics[min_] + " "
+                        min_ += 1
             else:
                 print('Error: No command found!')
         else:
@@ -106,11 +116,15 @@ class Service:
         print(x)
 
         # Generate SQL query
-        sql_ = command + " " + columns_ + " FROM " + table
+        if command == 'SELECT':
+            sql_ = command + " " + columns_ + " FROM " + table
+        elif command == 'UPDATE':
+            sql_ = command + " " + table + " SET " + updates_
+        elif command == 'DELETE':
+            sql_ = command + " FROM " + table
         if conditions_:
-            sql_ += " " + conditions_ + ";"
-        else:
-            sql_ += ';'
+            sql_ += " " + conditions_
+        sql_ += ';'
 
         return sql_
 

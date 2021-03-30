@@ -4,8 +4,8 @@
     <option name="enabled" value="true" />
   </component>
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$/../snlidb-backend" />
-    <orderEntry type="inheritedJdk" />
+    <content url="file://$MODULE_DIR$" />
+    <orderEntry type="jdk" jdkName="Python 3.9 (flask_env)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">
