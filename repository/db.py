@@ -1,4 +1,5 @@
 from flaskext.mysql import MySQL
+import sys
 
 
 class Db:
@@ -20,11 +21,16 @@ class Db:
         self.conn = mysql.connect()
 
     def executeQuery(self, query):
-        # Create cursor
-        cursor = self.conn.cursor()
-        # cursor.execute("insert into patient(name,age) values (%s,%s)", (name, age))
-        cursor.execute(query)
-        self.conn.commit()
-        records = cursor.fetchall()
-        cursor.close()
+        try:
+            # Create cursor
+            cursor = self.conn.cursor()
+            # cursor.execute("insert into patient(name,age) values (%s,%s)", (name, age))
+            cursor.execute(query)
+            self.conn.commit()
+            records = cursor.fetchall()
+            cursor.close()
+        except:
+            e = sys.exc_info()[0]
+            print('Exception : ' + str(e))
+            records = 'Exception found!'
         return records
