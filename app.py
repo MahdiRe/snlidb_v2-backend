@@ -53,16 +53,8 @@ def generateQueryV2():
     query = request.json['query']
     print(query)
     nlq = SQLBuilder(query)
-    nlq.pos_tagging()
-    nlq.semantic_analysis()
-    nlq.derive_conditions()
-    nlq.derive_updates()
-    nlq.refine_columns()
-    nlq.reserve_sql_words()
-    nlq.arrange_sql_words()
-    print(nlq.sql_)
-    # result = queryGenerator.generateSQL(query)
-    return nlq.sql_
+    nlq.nlq2sql_converter()
+    return nlq.get_sql()
 
 
 @app.route('/execute', methods=['POST'])
