@@ -1,11 +1,12 @@
+from flask import Flask
 from flaskext.mysql import MySQL
 import sys
 
 
 class Db:
 
-    def __init__(self, app):
-        self.configureDB(app)
+    def __init__(self):
+        self.configureDB(Flask(__name__))
 
     def configureDB(self, app):
         mysql = MySQL()

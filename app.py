@@ -1,12 +1,16 @@
 from flask import Flask, request
 from flask_cors import CORS
-from tokenization import Tokenization
-from service import Service
+from service.tokenization import Tokenization
+# from service.query_generator import QueryGenerator
+from repository.student_repo import StudentRepo
+import json
+from model.sql_builder import SQLBuilder
 
 app = Flask(__name__)
 CORS(app)
 tokenizer = Tokenization()
-service = Service(app)
+# queryGenerator = QueryGenerator()
+studentRepo = StudentRepo()
 
 # test = 'සියලුම සිසුන්ගේ තොරතුරු ලබා දෙන්න'
 # test1 = 'ලකුනු 75ට සමාන වැඩි සිසුන්ගේ නම් නම සුනිල් දත්ත තොරතුරු හෝඅඩු'
@@ -36,17 +40,43 @@ def hello_world():
     return 'Hello World!'
 
 
-@app.route('/query', methods=['POST'])
-def generateQuery():
+# @app.route('/query', methods=['POST'])
+# def generateQuery():
+#     query = request.json['query']
+#     print(query)
+#     # result = queryGenerator.generateSQL(query)
+#     return result
+
+
+@app.route('/query/v2', methods=['POST'])
+def generateQueryV2():
     query = request.json['query']
     print(query)
-    result = service.generateSQL(query)
-    return result
+    nlq = SQLBuilder(query)
+    nlq.pos_tagging()
+    nlq.semantic_analysis()
+    nlq.derive_conditions()
+    nlq.derive_updates()
+    nlq.refine_columns()
+    nlq.reserve_sql_words()
+    nlq.arrange_sql_words()
+    print(nlq.sql_)
+    # result = queryGenerator.generateSQL(query)
+    return nlq.sql_
+
+
+@app.route('/execute', methods=['POST'])
+def executeQuery():
+    query = request.json['query']
+    print(query)
+    result = studentRepo.executeQuery(query)
+    return json.dumps(result)
 
 
 @app.route('/tokenize')
 def tokenize():
-    x = str(tokenizer.posTagger(a1)) + "\n" + str(tokenizer.posTagger(a2)) + "\n" + str(tokenizer.posTagger(a3)) + "\n" + str(tokenizer.posTagger(a4))
+    x = str(tokenizer.posTagger(a1)) + "\n" + str(tokenizer.posTagger(a2)) + "\n" + str(
+        tokenizer.posTagger(a3)) + "\n" + str(tokenizer.posTagger(a4))
     print(x)
     # return str(tokenizer.posTagger("වැඩියෙන්"))
     return x
