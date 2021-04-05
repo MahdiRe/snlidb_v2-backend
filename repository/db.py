@@ -5,8 +5,8 @@ from flaskext.mysql import MySQL
 class Db:
 
     def __init__(self):
-        self.configure_db(Flask(__name__))
         self._conn = None
+        self.configure_db(Flask(__name__))
 
     def configure_db(self, app):
         mysql = MySQL()
