@@ -4,8 +4,8 @@ studentRepo = StudentRepo()
 
 
 class WordClassifier:
-    @staticmethod
-    def extractCondition(tags):
+
+    def extract_condition(self, tags):
         # Extract Conditions
         min_, max_, conditions_ = 0, (len(tags) - 2), []
         while min_ < max_:
@@ -13,17 +13,15 @@ class WordClassifier:
             if tags[min_][2] == 'column' and \
                     (tags[(min_ + 1)][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM' or tags[(min_ + 1)][1] == 'NNP') and \
                     tags[(min_ + 2)][2] == 'comparison':
-                tags[(min_ + 1)] = WordClassifier.changeSpecificTupleValue(tags[(min_ + 1)], 3,
-                                                                           WordClassifier.replaceLastCharacter(
-                                                                               tags[(min_ + 1)][0]))
+                tags[(min_ + 1)] = self.__change_specific_tuple_value(tags[(min_ + 1)], 3,
+                                                               self.__replace_last_character(tags[(min_ + 1)][0]))
                 conditions_.append([tags[min_], tags[(min_ + 2)], tags[(min_ + 1)]])
 
             # Example: 75ට සමාන ලකුනු, සුනිල්ට සමාන නම
             elif (tags[min_][1] == 'NNC' or tags[min_][1] == 'NUM' or tags[min_][1] == 'NNP') and \
                     tags[(min_ + 1)][2] == 'comparison' and \
                     tags[(min_ + 2)][2] == 'column':
-                tags[min_] = WordClassifier.changeSpecificTupleValue(tags[min_], 3,
-                                                                     WordClassifier.replaceLastCharacter(tags[min_][0]))
+                tags[min_] = self.__change_specific_tuple_value(tags[min_], 3, self.__replace_last_character(tags[min_][0]))
                 conditions_.append([tags[(min_ + 2)], tags[(min_ + 1)], tags[min_]])
                 # print(conditions_)
 
@@ -32,9 +30,9 @@ class WordClassifier:
         if len(conditions_) == 0:
             for tag in tags:
                 if tag[1] == 'NNP':
-                    tag = WordClassifier.changeSpecificTupleValue(tag, 3, WordClassifier.replaceLastCharacter(tag[0]))
+                    tag = self.__change_specific_tuple_value(tag, 3, self.__replace_last_character(tag[0]))
                     sql_ = "SELECT * FROM student WHERE name = " + tag[3]
-                    result = studentRepo.executeQuery(sql_)
+                    result = studentRepo.execute_query(sql_)
                     if result:
                         # print('wait')
                         conditions_.append([('-', '-', 'column', 'name'), ('-', '-', 'comparison', '='), tag])
@@ -43,8 +41,7 @@ class WordClassifier:
 
         return conditions_
 
-    @staticmethod
-    def extractUpdates(tags):
+    def extract_updates(self, tags):
         # Extract Conditions
         min_, max_, conditions_ = 0, (len(tags) - 2), []
         while min_ < max_:
@@ -52,15 +49,13 @@ class WordClassifier:
             if tags[min_][2] == 'column' and \
                     (tags[(min_ + 1)][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM' or tags[(min_ + 1)][1] == 'NNP') and \
                     tags[(min_ + 2)][2] != 'comparison':
-                tags[(min_ + 1)] = WordClassifier.changeSpecificTupleValue(tags[(min_ + 1)], 3,
-                                                                           WordClassifier.replaceLastCharacter(
-                                                                               tags[(min_ + 1)][0]))
+                tags[(min_ + 1)] = self.__change_specific_tuple_value(tags[(min_ + 1)], 3,
+                                                               self.__replace_last_character(tags[(min_ + 1)][0]))
                 conditions_.append([tags[min_], tags[(min_ + 1)]])
             min_ += 1
         return conditions_
 
-    @staticmethod
-    def replaceConditions(sentence):
+    def replace_conditions(self, sentence):
         sentence = sentence.replace('අඩුවෙන්', 'අඩු')
         sentence = sentence.replace('වැඩියෙන්', 'වැඩි')
         sentence = sentence.replace('හෝ වැඩි', 'හෝවැඩි')
@@ -69,8 +64,7 @@ class WordClassifier:
         sentence = sentence.replace('හෝ ඊට අඩු', 'හෝඅඩු')
         return sentence
 
-    @staticmethod
-    def replaceLastCharacter(word):
+    def __replace_last_character(self, word):
         if any(char.isdigit() for char in word):
             if word[-1:] == 'ට':
                 word = word.replace('ට', '')
@@ -92,8 +86,7 @@ class WordClassifier:
             word = "'" + word + "'"
         return word
 
-    @staticmethod
-    def changeSpecificTupleValue(tuple_, index, value):
+    def __change_specific_tuple_value(self, tuple_, index, value):
         list_ = list(tuple_)
         list_[index] = value
         tuple_ = tuple(list_)

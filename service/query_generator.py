@@ -2,21 +2,21 @@
 # from service.tokenization import Tokenization
 # from service.word_classifier import WordClassifier
 #
+# studentRepo = StudentRepo()
+# wordClassifier = WordClassifier()
+# tokenizer = Tokenization()
+#
 #
 # class QueryGenerator:
 #
-#     def __init__(self):
-#         self.studentRepo = StudentRepo()
-#         self.wordClassifier = WordClassifier()
-#         self.tokenizer = Tokenization()
+#     @staticmethod
+#     def generateSQL(query):
 #
-#     def generateSQL(self, query):
-#
-#         nlq = self.wordClassifier.replaceConditions(query)
+#         nlq = wordClassifier.replaceConditions(query)
 #         print('nlq: ' + nlq)
 #
 #         # Tokenization + Stemming + POS Tagging
-#         tags = (self.tokenizer.posTagger(nlq))[0]
+#         tags = (tokenizer.posTagger(nlq))[0]
 #         print('tokens: ' + str(tags))
 #
 #         # Derive the Command, Table, Columns, Logics and Conditions
@@ -25,37 +25,37 @@
 #         while min_ < len(tags):
 #             query = "SELECT english_word,semantic_meaning FROM word_mappings" \
 #                     " WHERE sinhala_word='" + tags[min_][0] + "' OR root_word='" + tags[min_][0] + "';"
-#             result = self.studentRepo.executeQuery(query)
+#             result = studentRepo.executeQuery(query)
 #             if result:
 #                 # print(result)
 #                 for res in result:
 #                     if res[1] == 'neglect':
-#                         tags[min_] = self.listToTuple(tags[min_], res)
+#                         tags[min_] = listToTuple(tags[min_], res)
 #                     elif res[1] == 'command':
 #                         command = res[0]
-#                         tags[min_] = self.listToTuple(tags[min_], res)
+#                         tags[min_] = listToTuple(tags[min_], res)
 #                     elif res[1] == 'table':
 #                         table = res[0]
-#                         tags[min_] = self.listToTuple(tags[min_], res)
+#                         tags[min_] = listToTuple(tags[min_], res)
 #                     elif res[1] == 'column':
 #                         # columns.append((tags[min_][0], res[0]))
 #                         columns.append(res[0])
-#                         tags[min_] = self.listToTuple(tags[min_], res)
+#                         tags[min_] = listToTuple(tags[min_], res)
 #                     elif res[1] == 'logic':
 #                         # logics.append((tags[min_][0], res[0]))
 #                         logics.append(res[0])
-#                         tags[min_] = self.listToTuple(tags[min_], res)
+#                         tags[min_] = listToTuple(tags[min_], res)
 #                     elif res[1] == 'comparison':
 #                         # conditions.append((tags[min_][0], res[0]))
 #                         comparisons.append(res[0])
-#                         tags[min_] = self.listToTuple(tags[min_], res)
+#                         tags[min_] = listToTuple(tags[min_], res)
 #             else:
-#                 tags[min_] = self.listToTuple(tags[min_], ('TBC', 'TBC'))
+#                 tags[min_] = listToTuple(tags[min_], ('TBC', 'TBC'))
 #             min_ += 1
 #
 #         # Derive the conditions
-#         conditions = self.wordClassifier.extractCondition2(tags)
-#         updates = self.wordClassifier.extractUpdates(tags)
+#         conditions = wordClassifier.extractCondition(tags)
+#         updates = wordClassifier.extractUpdates(tags)
 #
 #         # Remove columns that involve in conditions.
 #         for con in conditions:
@@ -129,10 +129,8 @@
 #         return sql_
 #
 #
-#     def listToTuple(self, tuple_, result_):
-#         j = list(tuple_)
-#         j.append(result_[1])
-#         j.append(result_[0])
-#         return tuple(j)
-#
-#
+# def listToTuple(tuple_, result_):
+#     j = list(tuple_)
+#     j.append(result_[1])
+#     j.append(result_[0])
+#     return tuple(j)

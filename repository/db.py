@@ -1,14 +1,14 @@
 from flask import Flask
 from flaskext.mysql import MySQL
-import sys
 
 
 class Db:
 
     def __init__(self):
-        self.configureDB(Flask(__name__))
+        self.configure_db(Flask(__name__))
+        self._conn = None
 
-    def configureDB(self, app):
+    def configure_db(self, app):
         mysql = MySQL()
         mysql.init_app(app)
 
@@ -19,19 +19,4 @@ class Db:
         mysql.init_app(app)
 
         # Create connection
-        self.conn = mysql.connect()
-
-    def executeQuery(self, query):
-        try:
-            # Create cursor
-            cursor = self.conn.cursor()
-            # cursor.execute("insert into patient(name,age) values (%s,%s)", (name, age))
-            cursor.execute(query)
-            self.conn.commit()
-            records = cursor.fetchall()
-            cursor.close()
-        except:
-            e = sys.exc_info()[0]
-            print('Exception : ' + str(e))
-            records = 'Exception found!'
-        return records
+        self._conn = mysql.connect()

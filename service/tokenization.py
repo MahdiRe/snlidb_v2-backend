@@ -5,20 +5,20 @@ from service.stemming import Stemming
 class Tokenization:
 
     def __init__(self):
-        self.tokenizer = SinhalaTokenizer()
-        self.tagger = POSTagger()
-        self.stemming = Stemming()
+        self.__tokenizer = SinhalaTokenizer()
+        self.__tagger = POSTagger()
+        self.__stemming = Stemming()
 
-    def posTagger(self, sentence):
+    def pos_tagger(self, sentence):
 
         # tokenization
-        tokens = [self.tokenizer.tokenize(f'{ss}.') for ss in self.tokenizer.split_sentences(sentence)]
+        tokens = [self.__tokenizer.tokenize(f'{ss}.') for ss in self.__tokenizer.split_sentences(sentence)]
 
         # Stemming
         stems = []
         for token in tokens[0]:
-            stems.append(self.stemming.findRoot(token))
+            stems.append(self.__stemming.find_root(token))
 
         # POS Tagging
-        pos_tags = self.tagger.predict([stems])
+        pos_tags = self.__tagger.predict([stems])
         return pos_tags

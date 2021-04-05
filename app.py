@@ -53,22 +53,23 @@ def generateQueryV2():
     query = request.json['query']
     print(query)
     nlq = SQLBuilder(query)
-    nlq.nlq2sql_converter()
-    return nlq.get_sql()
+    return nlq.nlq2sql_converter()
+    # nlq.nlq2sql_converter()
+    # return nlq.get_sql()
 
 
 @app.route('/execute', methods=['POST'])
 def executeQuery():
     query = request.json['query']
     print(query)
-    result = studentRepo.executeQuery(query)
+    result = studentRepo.execute_query(query)
     return json.dumps(result)
 
 
 @app.route('/tokenize')
 def tokenize():
-    x = str(tokenizer.posTagger(a1)) + "\n" + str(tokenizer.posTagger(a2)) + "\n" + str(
-        tokenizer.posTagger(a3)) + "\n" + str(tokenizer.posTagger(a4))
+    x = str(tokenizer.pos_tagger(a1)) + "\n" + str(tokenizer.pos_tagger(a2)) + "\n" + str(
+        tokenizer.pos_tagger(a3)) + "\n" + str(tokenizer.pos_tagger(a4))
     print(x)
     # return str(tokenizer.posTagger("වැඩියෙන්"))
     return x

@@ -1,5 +1,4 @@
 from repository.db import Db
-import sys
 
 
 class StudentRepo(Db):
@@ -7,17 +6,16 @@ class StudentRepo(Db):
     def __init__(self):
         super().__init__()
 
-    def executeQuery(self, query):
+    def execute_query(self, query):
         try:
             # Create cursor
-            cursor = self.conn.cursor()
+            cursor = self._conn.cursor()
             # cursor.execute("insert into patient(name,age) values (%s,%s)", (name, age))
             cursor.execute(query)
-            self.conn.commit()
+            self._conn.commit()
             records = cursor.fetchall()
             cursor.close()
-        except:
-            e = sys.exc_info()[0]
+        except Exception as e:
             print('Exception : ' + str(e))
             records = 'Exception found!'
         return records

@@ -2,15 +2,17 @@ from service.tokenization import Tokenization
 from service.word_classifier import WordClassifier
 from repository.student_repo import StudentRepo
 
-tokenizer = Tokenization()
 studentRepo = StudentRepo()
 
 
 class SQLBuilder:
 
     def __init__(self, nlq):
+        self.tokenizer = Tokenization()
+        self.word_classifier = WordClassifier()
+
         self.__user_nlq = nlq
-        self.__nlq = WordClassifier.replaceConditions(self.__user_nlq)
+        self.__nlq = self.word_classifier.replace_conditions(self.__user_nlq)
         self.__tags = []
         self.__command = ''
         self.__table = ''
@@ -24,16 +26,16 @@ class SQLBuilder:
         self.__updates_ = ''
         self.__sql_ = ''
 
-    def pos_tagging(self):
-        self.__tags = (tokenizer.posTagger(self.__nlq))[0]
+    def __pos_tagging(self):
+        self.__tags = (self.tokenizer.pos_tagger(self.__nlq))[0]
         return self.__tags
 
-    def semantic_analysis(self):  # 1
+    def __semantic_analysis(self):  # 1
         min_ = 0
         while min_ < len(self.__tags):
             query = "SELECT english_word,semantic_meaning FROM word_mappings" \
                     " WHERE sinhala_word='" + self.__tags[min_][0] + "' OR root_word='" + self.__tags[min_][0] + "';"
-            result = studentRepo.executeQuery(query)
+            result = studentRepo.execute_query(query)
             if result:
                 for res in result:
                     if res[1] == 'neglect':
@@ -57,22 +59,22 @@ class SQLBuilder:
                 self.__tags[min_] = listToTuple(self.__tags[min_], ('TBC', 'TBC'))
             min_ += 1
 
-    def derive_conditions(self):  # 2
-        self.__conditions = WordClassifier.extractCondition(self.__tags)
+    def __derive_conditions(self):  # 2
+        self.__conditions = self.word_classifier.extract_condition(self.__tags)
         return self.__conditions
 
-    def derive_updates(self):  # 3
-        self.__updates = WordClassifier.extractUpdates(self.__tags)
+    def __derive_updates(self):  # 3
+        self.__updates = self.word_classifier.extract_updates(self.__tags)
         return self.__updates
 
-    def refine_columns(self):
+    def __refine_columns(self):
         for con in self.__conditions:
             for con1 in con:
                 if con1[2] == 'column':
                     if self.__columns.count(con1[3]):
                         self.__columns.remove(con1[3])
 
-    def reserve_sql_words(self):
+    def __reserve_sql_words(self):
         if not self.__table:
             self.__table = 'student'
 
@@ -109,7 +111,7 @@ class SQLBuilder:
         else:
             print('Error: No table found!')
 
-    def arrange_sql_words(self):
+    def __arrange_sql_words(self):
         if self.__command == 'SELECT':
             self.__sql_ = self.__command + " " + self.__columns_ + " FROM " + self.__table
         elif self.__command == 'UPDATE':
@@ -122,13 +124,14 @@ class SQLBuilder:
         return self.__sql_
 
     def nlq2sql_converter(self):
-        self.pos_tagging()
-        self.semantic_analysis()
-        self.derive_conditions()
-        self.derive_updates()
-        self.refine_columns()
-        self.reserve_sql_words()
-        self.arrange_sql_words()
+        self.__pos_tagging()
+        self.__semantic_analysis()
+        self.__derive_conditions()
+        self.__derive_updates()
+        self.__refine_columns()
+        self.__reserve_sql_words()
+        self.__arrange_sql_words()
+        return self.__sql_
 
     def get_sql(self):
         return self.__sql_
