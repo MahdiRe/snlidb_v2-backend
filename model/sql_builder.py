@@ -1,5 +1,5 @@
 from service.tokenization import Tokenization
-from service.word_classifier import WordClassifier
+from service.semantic_parser import SemanticParser
 from repository.student_repo import StudentRepo
 
 studentRepo = StudentRepo()
@@ -9,10 +9,10 @@ class SQLBuilder:
 
     def __init__(self, nlq):
         self.tokenizer = Tokenization()
-        self.word_classifier = WordClassifier()
+        self.semantic_parser = SemanticParser()
 
         self.__user_nlq = nlq
-        self.__nlq = self.word_classifier.replace_conditions(self.__user_nlq)
+        self.__nlq = self.semantic_parser.replace_conditions(self.__user_nlq)
         self.__tags = []
         self.__command = ''
         self.__table = ''
@@ -60,11 +60,11 @@ class SQLBuilder:
             min_ += 1
 
     def __derive_conditions(self):  # 2
-        self.__conditions = self.word_classifier.extract_condition(self.__tags)
+        self.__conditions = self.semantic_parser.extract_condition(self.__tags)
         return self.__conditions
 
     def __derive_updates(self):  # 3
-        self.__updates = self.word_classifier.extract_updates(self.__tags)
+        self.__updates = self.semantic_parser.extract_updates(self.__tags)
         return self.__updates
 
     def __refine_columns(self):

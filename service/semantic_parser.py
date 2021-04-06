@@ -3,7 +3,7 @@ from repository.student_repo import StudentRepo
 studentRepo = StudentRepo()
 
 
-class WordClassifier:
+class SemanticParser:
 
     def extract_condition(self, tags):
         # Extract Conditions
@@ -27,7 +27,7 @@ class WordClassifier:
 
             min_ += 1
 
-        if len(conditions_) == 0:
+        if len(conditions_) == 0:  # But not only
             for tag in tags:
                 if tag[1] == 'NNP':
                     tag = self.__change_specific_tuple_value(tag, 3, self.__replace_last_character(tag[0]))
@@ -42,8 +42,8 @@ class WordClassifier:
         return conditions_
 
     def extract_updates(self, tags):
-        # Extract Conditions
-        min_, max_, conditions_ = 0, (len(tags) - 2), []
+        # Extract Updates
+        min_, max_, updates_ = 0, (len(tags) - 2), []
         while min_ < max_:
             # Example: නම සුනිල් ලෙස, වයස 45 ලෙස, ලකුනු 50 ලෙස
             if tags[min_][2] == 'column' and \
@@ -51,9 +51,9 @@ class WordClassifier:
                     tags[(min_ + 2)][2] != 'comparison':
                 tags[(min_ + 1)] = self.__change_specific_tuple_value(tags[(min_ + 1)], 3,
                                                                self.__replace_last_character(tags[(min_ + 1)][0]))
-                conditions_.append([tags[min_], tags[(min_ + 1)]])
+                updates_.append([tags[min_], tags[(min_ + 1)]])
             min_ += 1
-        return conditions_
+        return updates_
 
     def replace_conditions(self, sentence):
         sentence = sentence.replace('අඩුවෙන්', 'අඩු')
