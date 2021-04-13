@@ -40,16 +40,27 @@ def hello_world():
     return 'Hello World!'
 
 
-# @app.route('/query', methods=['POST'])
-# def generateQuery():
-#     query = request.json['query']
-#     print(query)
-#     # result = queryGenerator.generateSQL(query)
-#     return result
+# ++++++++++++ Tables API's (3) ++++++++++++
+@app.route('/tables')
+def get_tables():
+    tables = studentRepo.get_all_tables()
+    i = 0
+    while i < len(tables):
+        if tables[i]['table_name'] == 'word_mappings':
+            del tables[i]
+        i = i + 1
+    return json.dumps(tables)
 
 
-@app.route('/query/v2', methods=['POST'])
-def generateQueryV2():
+@app.route('/tables/<table>')
+def get_table_data(table):
+    data = studentRepo.get_table_data(str(table))
+    return json.dumps(data, ensure_ascii=False).encode('UTF-8').decode()
+
+
+# ++++++++++++ Generate Query API's ++++++++++++
+@app.route('/query/generate', methods=['POST'])
+def generate_query():
     query = request.json['query']
     print(query)
     nlq = SQLBuilder(query)
@@ -58,21 +69,28 @@ def generateQueryV2():
     # return nlq.get_sql()
 
 
-@app.route('/execute', methods=['POST'])
-def executeQuery():
+@app.route('/query/execute', methods=['POST'])
+def execute_query():
     query = request.json['query']
     print(query)
     result = studentRepo.execute_query(query)
     return json.dumps(result)
 
 
-@app.route('/tokenize')
-def tokenize():
-    x = str(tokenizer.pos_tagger(a1)) + "\n" + str(tokenizer.pos_tagger(a2)) + "\n" + str(
-        tokenizer.pos_tagger(a3)) + "\n" + str(tokenizer.pos_tagger(a4))
-    print(x)
-    # return str(tokenizer.posTagger("වැඩියෙන්"))
-    return x
+# @app.route('/query', methods=['POST'])
+# def generateQuery():
+#     query = request.json['query']
+#     print(query)
+#     # result = queryGenerator.generateSQL(query)
+#     return result
+
+# @app.route('/tokenize')
+# def tokenize():
+#     x = str(tokenizer.pos_tagger(a1)) + "\n" + str(tokenizer.pos_tagger(a2)) + "\n" + str(
+#         tokenizer.pos_tagger(a3)) + "\n" + str(tokenizer.pos_tagger(a4))
+#     print(x)
+#     # return str(tokenizer.posTagger("වැඩියෙන්"))
+#     return x
 
 
 if __name__ == '__main__':
