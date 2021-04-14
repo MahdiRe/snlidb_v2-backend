@@ -55,3 +55,19 @@ class Db:
             print('Exception : ' + str(e))
             data = 'Exception found!'
         return data
+
+    def get_columns(self, table):
+        try:
+            # Create cursor
+            cursor = self._conn.cursor()
+            cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME =   %s", table)
+            # cursor.execute(query)
+            self._conn.commit()
+            # records = cursor.fetchall()
+            columns = [dict((cursor.description[i][0], value)
+                            for i, value in enumerate(row)) for row in cursor.fetchall()]
+            cursor.close()
+        except Exception as e:
+            print('Exception : ' + str(e))
+            columns = 'Exception found!'
+        return columns

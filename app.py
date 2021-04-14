@@ -55,7 +55,32 @@ def get_tables():
 @app.route('/tables/<table>')
 def get_table_data(table):
     data = studentRepo.get_table_data(str(table))
-    return json.dumps(data, ensure_ascii=False).encode('UTF-8').decode()
+    json_data = json.dumps(data, ensure_ascii=False).encode('UTF-8').decode()
+    return json_data
+
+
+@app.route('/tables/<table>/columns')
+def get_columns(table):
+    columns = studentRepo.get_columns(table)
+    i = 0
+    while i < len(columns):
+        if columns[i]['COLUMN_NAME'] == 'id':
+            del columns[i]
+        i = i + 1
+    json_data = json.dumps(columns, ensure_ascii=False).encode('UTF-8').decode()
+    print(json_data)
+    return json_data
+
+
+@app.route('/tables/<table>/insert', methods=['POST'])
+def insert_into_table(table):
+    print(request.json)
+    name = request.json['name']
+    age = request.json['age']
+    marks = request.json['marks']
+    result = studentRepo.insert_student(name, age, marks)
+    print(str(result))
+    return str(result)
 
 
 # ++++++++++++ Generate Query API's ++++++++++++
@@ -71,10 +96,11 @@ def generate_query():
 
 @app.route('/query/execute', methods=['POST'])
 def execute_query():
-    query = request.json['query']
-    print(query)
-    result = studentRepo.execute_query(query)
-    return json.dumps(result)
+    sql = request.json['sql']
+    print(sql)
+    result = studentRepo.execute_query(sql)
+    json_data = json.dumps(result, ensure_ascii=False).encode('UTF-8').decode()
+    return json_data
 
 
 # @app.route('/query', methods=['POST'])
