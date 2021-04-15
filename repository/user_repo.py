@@ -14,6 +14,8 @@ class UserRepo(Db):
             result = [dict((cursor.description[i][0], value)
                            for i, value in enumerate(row)) for row in cursor.fetchall()]
             cursor.close()
+            if (type(result) is list) and (len(result) == 0):
+                result = "User added successfully"
         except Exception as e:
             print('Exception : ' + str(e))
             if e.args[0] == 1062:
@@ -31,6 +33,7 @@ class UserRepo(Db):
             result = [dict((cursor.description[i][0], value)
                            for i, value in enumerate(row)) for row in cursor.fetchall()]
             cursor.close()
+            # result = len(result)
         except Exception as e:
             print('Exception : ' + str(e))
             result = 'Exception found!'

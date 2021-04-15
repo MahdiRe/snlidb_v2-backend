@@ -14,6 +14,8 @@ class StudentRepo(Db):
             result = [dict((cursor.description[i][0], value)
                            for i, value in enumerate(row)) for row in cursor.fetchall()]
             cursor.close()
+            if (type(result) is list) and (len(result) == 0):
+                result = "Student added successfully"
         except Exception as e:
             print('Exception : ' + str(e))
             result = 'Exception found!'
@@ -27,6 +29,8 @@ class StudentRepo(Db):
             result = [dict((cursor.description[i][0], value)
                            for i, value in enumerate(row)) for row in cursor.fetchall()]
             cursor.close()
+            if (type(result) is list) and (len(result) == 0):
+                result = "SQL executed successfully"
         except Exception as e:
             print('Exception : ' + str(e))
             result = 'Exception found!'
