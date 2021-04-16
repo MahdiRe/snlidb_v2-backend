@@ -9,17 +9,21 @@ class Db:
         self.configure_db(Flask(__name__))
 
     def configure_db(self, app):
-        mysql = MySQL()
-        mysql.init_app(app)
+        try:
+            mysql = MySQL()
+            mysql.init_app(app)
 
-        app.config['MYSQL_DATABASE_USER'] = 'root'
-        app.config['MYSQL_DATABASE_PASSWORD'] = ''
-        app.config['MYSQL_DATABASE_DB'] = 'test'
-        app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-        mysql.init_app(app)
+            app.config['MYSQL_DATABASE_USER'] = 'root'
+            app.config['MYSQL_DATABASE_PASSWORD'] = ''
+            app.config['MYSQL_DATABASE_DB'] = 'test'
+            app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+            mysql.init_app(app)
 
-        # Create connection
-        self._conn = mysql.connect()
+            # Create connection
+            self._conn = mysql.connect()
+        except Exception as e:
+            print(self.handle_exceptions(e.args[0]))
+            print("Exception: " + str(e))
 
     def get_all_tables(self):
         try:
@@ -33,7 +37,7 @@ class Db:
 
         except Exception as e:
             print('Exception : ' + str(e))
-            tables = 'Exception found!'
+            tables = self.handle_exceptions(e.args[0])
         return tables
 
     def get_table_data(self, table):
@@ -48,10 +52,7 @@ class Db:
 
         except Exception as e:
             print('Exception : ' + str(e))
-            if e.args[0] == 1146:
-                data = "Table '" + table + "' not found!"
-            else:
-                data = 'Exception found!'
+            data = self.handle_exceptions(e.args[0])
         return data
 
     def get_columns(self, table):
@@ -64,7 +65,7 @@ class Db:
             cursor.close()
         except Exception as e:
             print('Exception : ' + str(e))
-            columns = 'Exception found!'
+            columns = self.handle_exceptions(e.args[0])
         return columns
 
     def execute_query(self, query):
@@ -76,5 +77,14 @@ class Db:
             cursor.close()
         except Exception as e:
             print('Exception : ' + str(e))
-            result = 'Exception found!'
+            result = self.handle_exceptions(e.args[0])
         return result
+
+    def handle_exceptions(self, ex_no):
+        if ex_no == 2003:
+            return "MySQL server is not running!"
+        elif ex_no == 1146:
+            return "Table not found!"
+        else:
+            return "Exception found!"
+

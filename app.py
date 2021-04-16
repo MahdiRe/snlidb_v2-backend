@@ -1,16 +1,16 @@
 from flask import Flask, request
 from flask_cors import CORS
 from service.tokenization import Tokenization
-# from service.query_generator import QueryGenerator
 from repository.student_repo import StudentRepo
 import json
 from model.sql_builder import SQLBuilder
+from repository.user_repo import UserRepo
 
 app = Flask(__name__)
 CORS(app)
 tokenizer = Tokenization()
-# queryGenerator = QueryGenerator()
 studentRepo = StudentRepo()
+userRepo = UserRepo()
 
 # test = 'සියලුම සිසුන්ගේ තොරතුරු ලබා දෙන්න'
 # test1 = 'ලකුනු 75ට සමාන වැඩි සිසුන්ගේ නම් නම සුනිල් දත්ත තොරතුරු හෝඅඩු'
@@ -38,6 +38,30 @@ a4 = "ලකුනු 50"
 @app.route('/')
 def hello_world():
     return 'Hello World!'
+
+
+# ++++++++++++ Login API's (3) ++++++++++++
+@app.route('/profile/register', methods=['POST'])
+def register_user():
+    if ('username' in request.json) and ('password' in request.json) and ('role' in request.json):
+        u_name = request.json['username']
+        pwd = request.json['password']
+        role = request.json['role']
+        json_data = json.dumps(userRepo.insert_user(u_name, pwd, role))
+        return json_data
+    else:
+        return 'Invalid request JSON!'
+
+
+@app.route('/profile/login', methods=['POST'])
+def login_user():
+    if ('username' in request.json) and ('password' in request.json):
+        u_name = request.json['username']
+        pwd = request.json['password']
+        result = userRepo.login_user(u_name, pwd)
+        return json.dumps(result)
+    else:
+        return 'Invalid request JSON!'
 
 
 # ++++++++++++ Tables API's (3) ++++++++++++
@@ -74,49 +98,51 @@ def get_columns(table):
 
 @app.route('/tables/<table>/insert', methods=['POST'])
 def insert_into_table(table):
-    print(request.json)
-    name = request.json['name']
-    age = request.json['age']
-    marks = request.json['marks']
-    result = studentRepo.insert_student(name, age, marks)
-    print(str(result))
-    return str(result)
+    if ('name' in request.json) and ('age' in request.json) and ('marks' in request.json):
+        name = request.json['name']
+        age = request.json['age']
+        marks = request.json['marks']
+        json_data = json.dumps(studentRepo.insert_student(name, age, marks))
+        return json_data
+    else:
+        return 'Invalid request JSON!'
 
 
 # ++++++++++++ Generate Query API's ++++++++++++
 @app.route('/query/generate', methods=['POST'])
 def generate_query():
-    query = request.json['query']
-    print(query)
-    nlq = SQLBuilder(query)
-    return nlq.nlq2sql_converter()
-    # nlq.nlq2sql_converter()
-    # return nlq.get_sql()
+    if 'query' in request.json:
+        query = request.json['query']
+        if query == '':
+            return 'Invalid query!'
+        else:
+            print(query)
+            nlq = SQLBuilder(query)
+            return nlq.nlq2sql_converter()
+    else:
+        return 'Invalid request JSON!'
 
 
 @app.route('/query/execute', methods=['POST'])
 def execute_query():
-    sql = request.json['sql']
-    print(sql)
-    result = studentRepo.execute_query(sql)
-    json_data = json.dumps(result, ensure_ascii=False).encode('UTF-8').decode()
-    return json_data
-
-
-# @app.route('/query', methods=['POST'])
-# def generateQuery():
-#     query = request.json['query']
-#     print(query)
-#     # result = queryGenerator.generateSQL(query)
-#     return result
-
-# @app.route('/tokenize')
-# def tokenize():
-#     x = str(tokenizer.pos_tagger(a1)) + "\n" + str(tokenizer.pos_tagger(a2)) + "\n" + str(
-#         tokenizer.pos_tagger(a3)) + "\n" + str(tokenizer.pos_tagger(a4))
-#     print(x)
-#     # return str(tokenizer.posTagger("වැඩියෙන්"))
-#     return x
+    if 'sql' in request.json:
+        sql = request.json['sql']
+        result = studentRepo.execute_student_query(sql)
+        if (type(result) is list) and (len(result) == 0):
+            if (sql.find("SELECT") != -1) or (sql.find("select") != -1):
+                result = "No data found!"
+            elif (sql.find("UPDATE") != -1) or (sql.find("update") != -1):
+                result = "Updated successfully!"
+            elif (sql.find("DELETE") != -1) or (sql.find("delete") != -1):
+                result = "Deleted successfully!"
+            elif (sql.find("INSERT") != -1) or (sql.find("INSERT") != -1):
+                result = "Inserted successfully!"
+            else:
+                result = "SQL executed successfully"
+        json_data = json.dumps(result, ensure_ascii=False).encode('UTF-8').decode()
+        return json_data
+    else:
+        return 'Invalid request JSON!'
 
 
 if __name__ == '__main__':

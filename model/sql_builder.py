@@ -127,7 +127,8 @@ class SQLBuilder:
         self.__pos_tagging()
         self.__semantic_analysis()
         self.__derive_conditions()
-        self.__derive_updates()
+        if self.__command == 'UPDATE':
+            self.__derive_updates()
         self.__refine_columns()
         self.__reserve_sql_words()
         self.__arrange_sql_words()

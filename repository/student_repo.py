@@ -18,7 +18,7 @@ class StudentRepo(Db):
                 result = "Student added successfully"
         except Exception as e:
             print('Exception : ' + str(e))
-            result = 'Exception found!'
+            result = self.handle_exceptions(e.args[0])
         return result
 
     def execute_student_query(self, query):
@@ -29,9 +29,7 @@ class StudentRepo(Db):
             result = [dict((cursor.description[i][0], value)
                            for i, value in enumerate(row)) for row in cursor.fetchall()]
             cursor.close()
-            if (type(result) is list) and (len(result) == 0):
-                result = "SQL executed successfully"
         except Exception as e:
             print('Exception : ' + str(e))
-            result = 'Exception found!'
+            result = self.handle_exceptions(e.args[0])
         return result
