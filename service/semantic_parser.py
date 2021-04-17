@@ -10,20 +10,29 @@ class SemanticParser:
         min_, max_, conditions_ = 0, (len(tags) - 2), []
         while min_ < max_:
             # Example: ලකුනු 75ට වැඩි, නම සුනිල්ට සමාන
-            if tags[min_][2] == 'column' and \
+            if (tags[min_][2] == 'column' and tags[min_][3] != '*') and \
                     (tags[(min_ + 1)][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM' or tags[(min_ + 1)][1] == 'NNP') and \
                     tags[(min_ + 2)][2] == 'comparison':
                 tags[(min_ + 1)] = self.__change_specific_tuple_value(tags[(min_ + 1)], 3,
-                                                               self.__replace_last_character(tags[(min_ + 1)][0]))
+                                                                      self.__replace_last_character(
+                                                                          tags[(min_ + 1)][0]))
                 conditions_.append([tags[min_], tags[(min_ + 2)], tags[(min_ + 1)]])
 
             # Example: 75ට සමාන ලකුනු, සුනිල්ට සමාන නම
             elif (tags[min_][1] == 'NNC' or tags[min_][1] == 'NUM' or tags[min_][1] == 'NNP') and \
                     tags[(min_ + 1)][2] == 'comparison' and \
-                    tags[(min_ + 2)][2] == 'column':
-                tags[min_] = self.__change_specific_tuple_value(tags[min_], 3, self.__replace_last_character(tags[min_][0]))
+                    (tags[(min_ + 2)][2] == 'column' and tags[(min_ + 2)][3] != '*'):
+                tags[min_] = self.__change_specific_tuple_value(tags[min_], 3,
+                                                                self.__replace_last_character(tags[min_][0]))
                 conditions_.append([tags[(min_ + 2)], tags[(min_ + 1)], tags[min_]])
-                # print(conditions_)
+
+            if (tags[min_][2] == 'column' and tags[min_][3] != '*') and \
+                    tags[(min_ + 2)][1] == 'VP':  # VP is to get 'k' & 'voo'
+                tags[(min_ + 1)] = self.__change_specific_tuple_value(tags[(min_ + 1)], 3,
+                                                                      self.__replace_last_character(
+                                                                          tags[(min_ + 1)][0]))
+                tags[(min_ + 2)] = self.__change_specific_tuple_value(tags[(min_ + 2)], 3, '=')  # 'k' & 'voo' is '='
+                conditions_.append([tags[min_], tags[(min_ + 2)], tags[(min_ + 1)]])
 
             min_ += 1
 
@@ -45,12 +54,14 @@ class SemanticParser:
         # Extract Updates
         min_, max_, updates_ = 0, (len(tags) - 2), []
         while min_ < max_:
+
             # Example: නම සුනිල් ලෙස, වයස 45 ලෙස, ලකුනු 50 ලෙස
-            if tags[min_][2] == 'column' and \
+            if (tags[min_][2] == 'column' and tags[min_][3] != '*') and \
                     (tags[(min_ + 1)][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM' or tags[(min_ + 1)][1] == 'NNP') and \
                     tags[(min_ + 2)][2] != 'comparison':
                 tags[(min_ + 1)] = self.__change_specific_tuple_value(tags[(min_ + 1)], 3,
-                                                               self.__replace_last_character(tags[(min_ + 1)][0]))
+                                                                      self.__replace_last_character(
+                                                                          tags[(min_ + 1)][0]))
                 updates_.append([tags[min_], tags[(min_ + 1)]])
             min_ += 1
         return updates_

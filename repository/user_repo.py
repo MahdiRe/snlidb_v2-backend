@@ -6,7 +6,7 @@ class UserRepo(Db):
     def __init__(self):
         super().__init__()
 
-    def insert_user(self, u_name, pwd, role):
+    def register_user(self, u_name, pwd, role):
         try:
             cursor = self._conn.cursor()
             cursor.execute("INSERT INTO users(user_name, password, role) values (%s, %s, %s)", (u_name, pwd, role))

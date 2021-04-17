@@ -24,6 +24,7 @@ class SQLBuilder:
         self.__columns_ = ''
         self.__conditions_ = ''
         self.__updates_ = ''
+        self.__insert_ = ''
         self.__sql_ = ''
 
     def __pos_tagging(self):
@@ -68,11 +69,16 @@ class SQLBuilder:
         return self.__updates
 
     def __refine_columns(self):
+        #  to remove columns that belongs to conditions
         for con in self.__conditions:
             for con1 in con:
                 if con1[2] == 'column':
                     if self.__columns.count(con1[3]):
                         self.__columns.remove(con1[3])
+
+        #  Solve 'siyaluma' issue
+        if (self.__columns.count('*')) and (len(self.__columns) != 1):
+            self.__columns.remove('*')
 
     def __reserve_sql_words(self):
         if not self.__table:
@@ -93,9 +99,19 @@ class SQLBuilder:
                 elif self.__command == 'UPDATE':
                     if self.__updates:
                         for update in self.__updates:  # Have specified updates?
-
                             self.__updates_ += update[0][3] + "=" + update[1][3] + ","
                         self.__updates_ = self.__updates_[:-1]  # Remove ','
+
+                elif self.__command == 'INSERT':
+                    if self.__updates:
+                        insert_bracket, insert_values = '(', '('
+                        print(self.__updates)
+                        for update in self.__updates:  # Have specified updates?
+                            insert_bracket += update[0][3] + ','
+                            insert_values += update[1][3] + ','
+                        insert_bracket = insert_bracket[:-1] + ')'  # Remove ','
+                        insert_values = insert_values[:-1] + ')'  # Remove ','
+                        self.__insert_ = "INSERT INTO " + self.__table + insert_bracket + " VALUES " + insert_values
 
                 if self.__conditions:  # Have condition?
                     self.__conditions_ += 'WHERE '
@@ -103,7 +119,7 @@ class SQLBuilder:
                     while min_ < len(self.__conditions):
                         self.__conditions_ += self.__conditions[min_][0][3] + self.__conditions[min_][1][3] + \
                                             self.__conditions[min_][2][3]
-                        if self.__logics and min_ < len(self.__logics):  # Have logics?
+                        if (len(self.__conditions) > 1) and self.__logics and min_ < len(self.__logics):  # Have logics?
                             self.__conditions_ += " " + self.__logics[min_] + " "
                         min_ += 1
             else:
@@ -118,6 +134,8 @@ class SQLBuilder:
             self.__sql_ = self.__command + " " + self.__table + " SET " + self.__updates_
         elif self.__command == 'DELETE':
             self.__sql_ = self.__command + " FROM " + self.__table
+        elif self.__command == 'INSERT':
+            self.__sql_ = self.__insert_
         if self.__conditions_:
             self.__sql_ += " " + self.__conditions_
         self.__sql_ += ';'
@@ -126,8 +144,9 @@ class SQLBuilder:
     def nlq2sql_converter(self):
         self.__pos_tagging()
         self.__semantic_analysis()
-        self.__derive_conditions()
-        if self.__command == 'UPDATE':
+        if self.__command != 'INSERT':
+            self.__derive_conditions()
+        if self.__command == 'UPDATE' or self.__command == 'INSERT':
             self.__derive_updates()
         self.__refine_columns()
         self.__reserve_sql_words()
