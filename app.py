@@ -91,7 +91,9 @@ def generate_query():
         else:
             print(query)
             nlq = SQLBuilder(query)
-            return nlq.nlq2sql_converter()
+            x = nlq.nlq2sql_converter()
+            print(nlq.to_string())
+            return x
     else:
         return 'Invalid request JSON!'
 
