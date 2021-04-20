@@ -11,7 +11,7 @@ class SemanticParser:
         while min_ < max_:
             # Example: ලකුනු 75ට වැඩි, නම සුනිල්ට සමාන
             if (tags[min_][2] == 'column' and tags[min_][3] != '*') and \
-                    (tags[(min_ + 1)][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM' or tags[(min_ + 1)][1] == 'NNP' or tags[(min_ + 1)][1] == 'NCV') and \
+                    (tags[(min_ + 1)][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM' or tags[(min_ + 1)][1] == 'NNP') and \
                     tags[(min_ + 2)][2] == 'comparison':
                 tags[(min_ + 1)] = self.__change_specific_tuple_value(tags[(min_ + 1)], 3,
                                                                       self.__replace_last_character(
@@ -53,7 +53,8 @@ class SemanticParser:
 
             # Example: නම සුනිල් ලෙස, වයස 45 ලෙස, ලකුනු 50 ලෙස
             if (tags[min_][2] == 'column' and tags[min_][3] != '*') and \
-                    (tags[(min_ + 1)][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM' or tags[(min_ + 1)][1] == 'NNP' or tags[(min_ + 1)][1] == 'NCV') and \
+                    (tags[(min_ + 1)][1] == 'NNC' or tags[(min_ + 1)][1] == 'NUM'
+                     or tags[(min_ + 1)][1] == 'NNP' or tags[(min_ + 1)][1] == 'NCV') and \
                     tags[(min_ + 2)][2] != 'comparison':
                 tags[(min_ + 1)] = self.__change_specific_tuple_value(tags[(min_ + 1)], 3,
                                                                       self.__replace_last_character(
