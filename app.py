@@ -5,13 +5,30 @@ from repository.student_repo import StudentRepo
 import json
 from model.sql_builder import SQLBuilder
 from repository.user_repo import UserRepo
+from repository.db import Db
 
 app = Flask(__name__)
 CORS(app)
 tokenizer = Tokenization()
 studentRepo = StudentRepo()
 userRepo = UserRepo()
+db = Db()
 
+
+@app.route('/datasets')
+def datasets():
+    count_ = "SELECT id from test.student_datasets WHERE sql_ = '';"
+    ids = list(db.execute_query(count_))
+    for id_ in ids:
+        nlq_ = 'SELECT nlq from student_datasets where id = ' + str(id_[0])
+        # print(nlq_)
+        nlq = db.execute_query(nlq_)[0][0]
+        sql_ = SQLBuilder(nlq)
+        sql = sql_.nlq2sql_converter()
+        ex = "UPDATE student_datasets set sql_ = " + str(sql) + " where id = " + str(id_[0])
+        # print(ex)
+        db.execute_query(ex)
+    return ' '
 
 # ++++++++++++ Login API's (3) ++++++++++++
 @app.route('/profile/register', methods=['POST'])

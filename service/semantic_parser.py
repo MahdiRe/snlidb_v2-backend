@@ -28,7 +28,7 @@ class SemanticParser:
 
             # Example: වයස 14ක් වූ, වයස 14 වන, ලකුනු 75ක් ගත්
             elif (tags[min_][2] == 'column' and tags[min_][3] != '*') and \
-                    tags[(min_ + 2)][1] == 'VP':  # VP is to get 'k' & 'voo'
+                    (tags[(min_ + 2)][1] == 'VP' and tags[(min_ + 2)][2] != 'column'):  # VP is to get 'k' & 'voo', clashes with column (lakunu)
                 tags[(min_ + 1)] = self.__change_specific_tuple_value(tags[(min_ + 1)], 3,
                                                                       self.__replace_last_character(
                                                                           tags[(min_ + 1)][0]))
@@ -40,7 +40,7 @@ class SemanticParser:
         #  Example: කමල්ගේ, නිමල්ගේ, සුනිල්ගේ
         if len(conditions_) == 0:
             for tag in tags:
-                if tag[1] == 'NNP':
+                if tag[1] == 'NNP' and tag[2] == 'TBC':
                     tag = self.__change_specific_tuple_value(tag, 3, self.__replace_last_character(tag[0]))
                     conditions_.append([('-', '-', 'column', 'name'), ('-', '-', 'comparison', '='), tag])
 
