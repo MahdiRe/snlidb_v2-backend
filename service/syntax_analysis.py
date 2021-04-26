@@ -2,7 +2,7 @@ from sinling import SinhalaTokenizer, POSTagger
 from service.stemming import Stemming
 
 
-class Tokenization:
+class SyntaxAnalysis:
 
     def __init__(self):
         self.__tokenizer = SinhalaTokenizer()
