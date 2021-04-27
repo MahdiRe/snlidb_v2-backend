@@ -11,7 +11,7 @@ class SemanticAnalysis:
         while min_ < max_:
             # Example: ලකුනු 75ට වැඩි, නම සුනිල්ට සමාන, වයස 14 වන
             if (tags[min_][2] == 'column') and \
-                    self.compare_or(tags[(min_ + 1)][1], 'NNC', 'NUM', 'NNP', 'NCV') and \
+                    self.compare_or(tags[(min_ + 1)][1], 'NNC', 'NUM', 'NNP', 'NCV', 'RRPCV') and \
                     (tags[(min_ + 2)][2] == 'comparison' or (tags[(min_ + 2)][1] == 'VP' and tags[(min_ + 2)][2] != 'column')):
                 tags[(min_ + 1)] = self.__change_specific_tuple_value(tags[(min_ + 1)], 3,
                                                 self.__replace_last_character(tags[(min_ + 1)][0]))
@@ -23,7 +23,7 @@ class SemanticAnalysis:
                     conditions_.append([tags[min_], tags[(min_ + 2)], tags[(min_ + 1)]])
 
             # Example: 75ට සමාන ලකුනු, සුනිල්ට සමාන නම
-            elif (self.compare_or(tags[min_][1], 'NNC', 'NUM', 'NNP', 'NCV')) and \
+            elif (self.compare_or(tags[min_][1], 'NNC', 'NUM', 'NNP', 'NCV', 'RRPCV')) and \
                     tags[(min_ + 1)][2] == 'comparison' and \
                     (tags[(min_ + 2)][2] == 'column'):
                 tags[min_] = self.__change_specific_tuple_value(tags[min_], 3,
@@ -48,7 +48,7 @@ class SemanticAnalysis:
 
             # Example: නම සුනිල් ලෙස, වයස 45 ලෙස, ලකුනු 50 ලෙස
             if (tags[min_][2] == 'column') and \
-                    (self.compare_or(tags[(min_ + 1)][1], 'NNC', 'NUM', 'NNP', 'NCV')) and \
+                    (self.compare_or(tags[(min_ + 1)][1], 'NNC', 'NUM', 'NNP', 'NCV', 'RRPCV')) and \
                     tags[(min_ + 2)][1] == 'POST':  # POST
                 tags[(min_ + 1)] = self.__change_specific_tuple_value(tags[(min_ + 1)], 3,
                                                 self.__replace_last_character(tags[(min_ + 1)][0]))
@@ -63,7 +63,7 @@ class SemanticAnalysis:
 
             # Example: නම සුනිල් ලෙස, වයස 45 ලෙස, ලකුනු 50 ලෙස
             if (tags[min_][2] == 'column') and \
-                    (self.compare_or(tags[(min_ + 1)][1], 'NNC', 'NUM', 'NNP', 'NCV')) and \
+                    (self.compare_or(tags[(min_ + 1)][1], 'NNC', 'NUM', 'NNP', 'NCV', 'RRPCV')) and \
                     tags[(min_ + 2)][1] == 'VP':
                 tags[(min_ + 1)] = self.__change_specific_tuple_value(tags[(min_ + 1)], 3,
                                                 self.__replace_last_character(tags[(min_ + 1)][0]))
@@ -108,8 +108,8 @@ class SemanticAnalysis:
         tuple_ = tuple(list_)
         return tuple_
 
-    def compare_or(self, value, equal1, equal2, equal3, equal4):
-        return value == equal1 or value == equal2 or value == equal3 or value == equal4
+    def compare_or(self, value, equal1, equal2, equal3, equal4, equal5):
+        return value == equal1 or value == equal2 or value == equal3 or value == equal4 or value == equal5
 
 
 

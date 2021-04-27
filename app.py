@@ -1,5 +1,8 @@
-#   * Author: Mahdi Refaideen
-#   * Date  : 01/01/2021
+###################################
+#   * Author : Mahdi Refaideen    #
+#   * Date   : 01/01/2021         #
+#   * Project: SNLIDB_v2          #
+###################################
 
 from flask import Flask, request
 from flask_cors import CORS
@@ -95,6 +98,7 @@ def generate_query():
             print("NLQ: " + query)
             nlq = SQLBuilder(query)
             x = nlq.nlq2sql_converter()
+            # print(nlq.to_string())
             print("SQL: " + x)
             return x
     else:
