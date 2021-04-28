@@ -13,8 +13,8 @@ id,sinhala_word,root_word,english_word,semantic_meaning
 12,වයස්,වයස,age,column
 13,ලකුණු,ලකුණ,marks,column
 14,ලකුනු,ලකුන,marks,column
-15,සියලුම,සියලු,*,column
-16,සෑම,සෑම,*,column
+15,සියලුම,සියලු,-,neglect
+16,සෑම,සෑම,-,neglect
 17,ලබාදෙන්න,දෙන්න,SELECT,command
 18,මොනවාද​,මොනවාද​,SELECT,command
 19,කුමක්ද,කුමක්,SELECT,command
@@ -53,3 +53,4 @@ id,sinhala_word,root_word,english_word,semantic_meaning
 52,තොරතුරු,තොරතුරු,-,neglect
 53,විස්තර​,විස්තර​,-,neglect
 54,ප්‍රතිඵලය,ප්‍රතිඵල,-,neglect
+55,නාමයන්,නාමය,name,column

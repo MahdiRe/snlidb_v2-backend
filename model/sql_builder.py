@@ -81,10 +81,6 @@ class SQLBuilder:
                     if self.__columns.count(con1[3]):
                         self.__columns.remove(con1[3])
 
-        #  Solve 'siyaluma' issue
-        # if (self.__columns.count('*')) and (len(self.__columns) != 1):
-        #     self.__columns.remove('*')
-
     def __reserve_sql_words(self):
         if not self.__table:
             self.__table = 'student'
@@ -123,7 +119,7 @@ class SQLBuilder:
                     while min_ < len(self.__conditions):
                         self.__conditions_ += self.__conditions[min_][0][3] + self.__conditions[min_][1][3] + \
                                             self.__conditions[min_][2][3]
-                        if (len(self.__conditions) > 1) and self.__logics and min_ < len(self.__logics):  # Have logics?
+                        if (len(self.__conditions) > 1) and self.__logics and min_ < len(self.__logics) and min_ < (len(self.__conditions)-1):  # Have logics?
                             self.__conditions_ += " " + self.__logics[min_] + " "
                         min_ += 1
             else:

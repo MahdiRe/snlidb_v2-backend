@@ -110,14 +110,3 @@ class SemanticAnalysis:
 
     def compare_or(self, value, equal1, equal2, equal3, equal4, equal5):
         return value == equal1 or value == equal2 or value == equal3 or value == equal4 or value == equal5
-
-
-
-# ----------------------
-# (VP or NNC) + NNC + JJ
-# (VP or NNC) + NNC + VP
-# (VP or NNC) + NUM + JJ
-# (VP or NNC) + NUM + VP
-# ----------------------
-# (VP or NNC) -> [1] is column & [3] is comparison
-# ----------------------
