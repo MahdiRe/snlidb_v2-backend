@@ -146,10 +146,10 @@ class SQLBuilder:
         self.__lexicon_analysis()
         if self.__command != 'INSERT':
             self.__derive_conditions()
+        else:
+            self.__derive_inserts()
         if self.__command == 'UPDATE':
             self.__derive_updates()
-        if self.__command == 'INSERT':
-            self.__derive_inserts()
         self.__refine_columns()
         self.__reserve_sql_words()
         self.__arrange_sql_words()
