@@ -14,7 +14,7 @@ This system is able to generate SQL queries such as.
 
 We use Sinling library (https://github.com/ysenarath/sinling) for the syntax analysis purposes.
 
-The UI for this project is available in: https://github.com/MahdiRe/snlidb_v2-ui
+The UI for this project is available in: https://github.com/MahdiRe/snlidb_v2-ui   
 An explainantion video for this project: https://youtu.be/WvUnArGED3I
 
 Some useful files are added such as,
