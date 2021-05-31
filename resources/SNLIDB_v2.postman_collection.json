@@ -1,0 +1,151 @@
+{
+	"variables": [],
+	"info": {
+		"name": "SNLIDB",
+		"_postman_id": "7bd24d8a-a05d-c42f-ae1e-7e15caca6741",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/profile/login",
+			"request": {
+				"url": "localhost:5000/profile/login",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"username\": \"v4\",\r\n\t\"password\": \"admin\"\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/profile/register",
+			"request": {
+				"url": "localhost:5000/profile/register",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"username\": \"v4\",\r\n\t\"password\": \"admin\",\r\n\t\"role\": \"admin\"\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/tables",
+			"request": {
+				"url": "localhost:5000/tables",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"age\": \"55\",\n\t\"marks\": 55\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/tables/<table>",
+			"request": {
+				"url": "localhost:5000/tables/student",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"age\": \"55\",\n\t\"marks\": 55\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/tables/<table>/columns",
+			"request": {
+				"url": "localhost:5000/tables/student/columns",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"age\": \"55\",\n\t\"marks\": 55\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/query/generate",
+			"request": {
+				"url": "localhost:5000/query/generate",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"query\": \"ලකුනු 75ට වැඩි සිසුන්ගේ විස්තර ලබාදෙන්න\"\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/query/execute",
+			"request": {
+				"url": "localhost:5000/query/execute",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"sql\": \"SELECT * FROM student\"\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
